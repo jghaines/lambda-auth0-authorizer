@@ -1,6 +1,31 @@
 # lambda-auth0-authorizer
 
-An AWS Custom Authorizer for AWS Gateway that support Auth0 Bearer tokens.
+An AWS Custom Authorizer for AWS API Gateway that support Auth0 Bearer tokens.
+
+## About
+
+### What is AWS API Gateway?
+API Gateway is an AWS service that allows for the definition, configuration and deployment of REST API interfaces.
+These interfaces can connect to a number of backend systems.
+They are typically used to connect to AWS Lambda functions to deliver a so-called 'serverless' architecture.
+
+### What are Custom Authorizers?
+In February 2016 Amazon 
+[announced](https://aws.amazon.com/blogs/compute/introducing-custom-authorizers-in-amazon-api-gateway/)
+a new feature for API Gateway -
+[Custom Authorizers](http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html).
+
+This allows you to provide a Lambda function that will be invoked prior to an API Gateway execution to allow you to authenticate and authorize a request and then cache the result.
+This code can then be isolate to a single function.
+
+### What is Auth0?
+Auth0 is a 3rd party single-sign on service that provides single sign-on services, abstracting various login and identity services.
+They offer a number of SDKs as well as integrations with AWS.
+
+### What is lambda-auth0-authorizer?
+
+This package gives you the code for a Custom Authorizer that will, with a little configuration, perform Auth0 authentication on all API Gateway requests.
+
 
 ## Configuration
 
