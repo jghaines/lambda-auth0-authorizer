@@ -1,0 +1,5 @@
+{
+    "type" : "TOKEN",
+    "authorizationToken" : "Bearer <16-char access_token>",
+    "methodArn" : "arn:aws:execute-api:<regionId>:<accountId>:<apiId>/<stage>/<method>/<resourcePath>"
+}

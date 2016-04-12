@@ -1,0 +1,21 @@
+{
+  "name": "lambda-auth0-authenticator",
+  "version": "0.0.1",
+  "description": "An AWS Lambda function to provide an Auth0 Custom Authenticator for AWS API Gateway",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/lambda-local --timeout 300 --lambdapath index.js --eventpath event.json",
+    "zip": "rm -f lambda-auth0-authorizer.zip ; zip lambda-auth0-authorizer.zip -r *.js *.json .env node_modules/"
+  },
+  "author": "Jason Haines",
+  "license": "ISC",
+  "dependencies": {
+    "auth0": "^2.1.0",
+    "bluebird": "^3.3.4",
+    "dotenv": "^2.0.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.3.3",
+    "lambda-local": "0.0.9"
+  }
+}

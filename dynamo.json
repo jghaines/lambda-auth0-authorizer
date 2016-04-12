@@ -1,0 +1,6 @@
+{
+    "TableName" : "Users",
+    "Item"      : {
+        "userId" : ""
+    }
+}
