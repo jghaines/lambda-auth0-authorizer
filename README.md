@@ -7,7 +7,7 @@ An AWS Custom Authorizer for AWS API Gateway that support Auth0 Bearer tokens.
 ### What is AWS API Gateway?
 API Gateway is an AWS service that allows for the definition, configuration and deployment of REST API interfaces.
 These interfaces can connect to a number of backend systems.
-They are typically used to connect to AWS Lambda functions to deliver a so-called 'serverless' architecture.
+One popular use case is to provide an interface to AWS Lambda functions to deliver a so-called 'serverless' architecture.
 
 ### What are Custom Authorizers?
 In February 2016 Amazon 
@@ -15,16 +15,16 @@ In February 2016 Amazon
 a new feature for API Gateway -
 [Custom Authorizers](http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html).
 
-This allows you to provide a Lambda function that will be invoked prior to an API Gateway execution to allow you to authenticate and authorize a request and then cache the result.
-This code can then be isolate to a single function.
+This allows a Lambda function to be invoked prior to an API Gateway execution to perform authentication and authorization of the request and caching of the result.
+This code can then be isolated to a single function rather than replicated across every backend Lambda function.
 
 ### What is Auth0?
 Auth0 is a 3rd party single-sign on service that provides single sign-on services, abstracting various login and identity services.
-They offer a number of SDKs as well as integrations with AWS.
+Auth0 offers a number of SDKs as well as integrations with AWS.
 
 ### What is lambda-auth0-authorizer?
 
-This package gives you the code for a Custom Authorizer that will, with a little configuration, perform Auth0 authentication on all API Gateway requests.
+This package gives you the code for a Custom Authorizer that will, with a little configuration, perform Auth0 authentication on API Gateway requests.
 
 
 ## Configuration
@@ -44,6 +44,7 @@ You will need to set:
     AUTH0_DOMAIN=mydomain.auth0.com
     AUTH0_CLIENTID=MyClientId
 
+You can obtain these values from your Auth0 [Application settings](https://manage.auth0.com/#/applications).
 
 ### policyDocument.json
 
@@ -73,18 +74,36 @@ You should only change:
 
 ## Local testing
 
+### Bearer token
+
+You will need to obtain a test Bearer Token.
+This is the [id_token](https://auth0.com/docs/tokens/id_token) that is provided by a successful Auth0 authentication.
+The id_token is valid for 10 hours (36000 seconds) by default
+
+You can check your id_token by passing it to Auth0's API test interface:  
+https://auth0.com/docs/auth-api#post--tokeninfo
+
+lamda-auth0-authorizer also will also auto-detect and support Auth0's depcreated 16-character v1 [access_token](https://auth0.com/docs/tokens/access_token).
+
 ### event.json
 
-Copy event.json.sample to event.json
+Copy event.json.sample to event.json. Provide the id_token from the previous step. 
 
-You will need to copy the access_token from a successful Auth0 authentication.  
+    "authorizationToken" : "Bearer <id_token>",
+    
+### Local DynamoDB connection testing
 
-    "authorizationToken" : "Bearer <16-char access_token>",
+If you are using the DynamoDB configuration described above, check that your local environment is configured for DynamoDB
+
+Using the [AWS CLI](https://aws.amazon.com/cli/), run the following command with the <table_name> you configured in dynamo.json. 
+
+    $ aws dynamodb describe-table --table-name <table_name>
+
+The result should run without error and show the same value for TableName.KeySchema.AttributeName which the table key configured in dynamo.json. 
 
 ### lambda-local
 
 Run `npm test` to use lambda-local test harness 
-
 
 A successful run will look something like:
 
@@ -190,12 +209,10 @@ Click **Create**
 
 You can test the authorizer by supplying an Identity token and clicking **Test**
 
-The Identity token is the same format we used in event.json above.
+The id_token is the same format we used in event.json above.
 
-    Bearer <16-char access_token>
+    Bearer <id_token>
   
-You will need to copy the access_token from a successful Auth0 authentication.  
-
 A successful test will look something like:
 
     Latency: 2270 ms
@@ -249,12 +266,12 @@ You can use Postman to test the REST API
  * The base URL you can see in the Stages section of the API
  * Append the Resource name to get the full URL  
 * Header - add an Authorization key
- * Authorization : Bearer <16-char access_token>
+ * Authorization : Bearer <id_token>
 
 #### With curl from the command line
 
-    $ curl -X POST <url> -H 'Authorization: Bearer <16-char access_token>'
+    $ curl -X POST <url> -H 'Authorization: Bearer <id_token>'
  
 #### In (modern) browsers console with fetch
 
-    fetch( '<url>', { method: 'POST', headers: { Authorization : 'Bearer <16-char access_token>' }}).then(response => { console.log( response );});
+    fetch( '<url>', { method: 'POST', headers: { Authorization : 'Bearer <id_token>' }}).then(response => { console.log( response );});

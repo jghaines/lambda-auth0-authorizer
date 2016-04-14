@@ -2,13 +2,15 @@
 
 // static setup that can be done at load-time
 
-var TOO_LONG_TOKEN_LENGTH = 256; // access tokens are 16 characters; id tokens are > 256 characters 
+var ACCESS_TOKEN_LENGTH = 16; // (aparent) length of an Autho0 access_token
 
 // since AWS Lambda doesn't (yet) provide environment varibles, load them from .env
 require('dotenv').config();
 
 var fs = require('fs');
 var Promise = require('bluebird');
+Promise.longStackTraces();
+
 var AWS = require('aws-sdk');
 AWS.config.apiVersions = { dynamodb: '2012-08-10' };
 if ( process.env.AWS_REGION ) {
@@ -41,11 +43,11 @@ try {
 
 var AuthenticationClient = require('auth0').AuthenticationClient;
 
-if ( typeof process.env.AUTH0_DOMAIN === "undefined" ) {
+if ( typeof process.env.AUTH0_DOMAIN === "undefined" || ! process.env.AUTH0_DOMAIN.match( /\.auth0\.com$/ )  ) {
     throw new Error( "Expected AUTHO_DOMAIN environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
 }
 
-if ( typeof process.env.AUTH0_CLIENTID === "undefined" ) {
+if ( typeof process.env.AUTH0_CLIENTID === "undefined" || process.env.AUTH0_CLIENTID.length === 0 ) {
     throw new Error( "Expected AUTH0_CLIENTID environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
 }
 
@@ -54,7 +56,6 @@ var auth0 = new AuthenticationClient( {
   clientId  : process.env.AUTH0_CLIENTID
 } );
 
-var userManager = auth0.users;
 
 // extract and return the Bearer Token from the Lambda event parameters
 var getToken = function( params ) {
@@ -73,13 +74,7 @@ var getToken = function( params ) {
     if ( ! match || match.length < 2 ) {
         throw new Error( "Invalid Authorization token - '" + tokenString + "' does not match 'Bearer .*'" );
     }
-    token = match[1];
-
-    if ( token.length > TOO_LONG_TOKEN_LENGTH ) {
-        throw new Error( "Invalid Authorization token - too long. Did you pass id_token instead of access_token ?" );
-    }
-    
-    return token;
+    return match[1];
 }
 
 // if dynamo.json is included in the package, save the userInfo to DynamoDB
@@ -117,7 +112,16 @@ var getAuthentication = function( principalId ) {
 module.exports.authenticate = function (params) {
     var token = getToken(params);
 
-    return userManager.getInfo(token)
+    var getTokenDataPromise;
+    if ( token.length === ACCESS_TOKEN_LENGTH ) { // Auth0 v1 access_token (deprecated)
+        getTokenDataPromise = auth0.users.getInfo( token ); 
+    } else if ( token.length > ACCESS_TOKEN_LENGTH ) { // (probably) Auth0 id_token
+        getTokenDataPromise = auth0.tokens.getInfo( token ); 
+    } else {
+        throw new TypeError( "Bearer token too short - expected >= 16 charaters" );
+    }
+
+    return getTokenDataPromise
         .then( saveUserInfo )
         .then( getPrincipalId )
         .then( getAuthentication );
