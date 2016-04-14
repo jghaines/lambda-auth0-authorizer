@@ -17,6 +17,7 @@ if ( process.env.AWS_REGION ) {
     AWS.config.update( { region: process.env.AWS_REGION } );
 }
 var dynamo = new AWS.DynamoDB.DocumentClient();
+Promise.promisifyAll( Object.getPrototypeOf( dynamo ));
 
 var policyDocumentFilename = 'policyDocument.json';
 var policyDocument;
@@ -84,7 +85,7 @@ var saveUserInfo = function( userInfo ) {
         var hashkeyName = Object.keys( putParams.Item )[0];
         putParams.Item = userInfo;
         putParams.Item[ hashkeyName ] = userInfo.user_id;
-        return dynamo.put( putParams ).promise().then( () => userInfo );        
+        return dynamo.putAsync( putParams ).then( () => userInfo );        
     } else {
         return userInfo;
     }
