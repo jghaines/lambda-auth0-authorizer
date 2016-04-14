@@ -1,6 +1,6 @@
 {
   "name": "lambda-auth0-authenticator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An AWS Lambda function to provide an Auth0 Custom Authenticator for AWS API Gateway",
   "main": "index.js",
   "scripts": {
@@ -8,14 +8,30 @@
     "zip": "rm -f lambda-auth0-authorizer.zip ; zip lambda-auth0-authorizer.zip -r *.js *.json .env node_modules/"
   },
   "author": "Jason Haines",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "dependencies": {
     "auth0": "^2.1.0",
     "bluebird": "^3.3.4",
     "dotenv": "^2.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.3.3",
+    "aws-sdk": "2.2.48",
     "lambda-local": "0.0.9"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jghaines/lambda-auth0-authorizer.git"
+  },
+  "keywords": [
+    "aws",
+    "api-gateway",
+    "auth0",
+    "custom-authorizer",
+    "authentication",
+    "lambda"
+  ],
+  "bugs": {
+    "url": "https://github.com/jghaines/lambda-auth0-authorizer/issues"
+  },
+  "homepage": "https://github.com/jghaines/lambda-auth0-authorizer#readme"
 }
