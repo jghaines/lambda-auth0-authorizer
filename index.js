@@ -6,5 +6,11 @@ var lib = require('./lib');
 module.exports.handler = function( event, context ) {
   lib.authenticate( event )
     .then( context.succeed )
-    .catch( context.fail );
+    .catch(function (err) {
+      if (err.message == "Unauthorized") {
+        context.fail("Unauthorized");
+      } else {
+        context.fail(err.message);
+      }
+    });
 };
