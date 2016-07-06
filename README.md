@@ -199,7 +199,7 @@ In the left panel, under your API name, click on **Custom Authorizers**. Click o
 * Lambda region : < from previous step >
 * Execution role : < the ARN of the Role we created in the previous step > 
 * Identity token source : method.request.header.Authorization
-* Token validation expression : '''^Bearer [-0-9a-zA-z\.]*$'''
+* Token validation expression : ```^Bearer [-0-9a-zA-z\.]*$```
 ** Cut-and-paste this regular expression from ^ to $ inclusive
 * Result TTL in seconds : 3600
 
