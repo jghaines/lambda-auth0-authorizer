@@ -78,7 +78,7 @@ You should only change:
 
 You will need to obtain a test Bearer Token.
 This is the [id_token](https://auth0.com/docs/tokens/id_token) that is provided by a successful Auth0 authentication.
-The id_token is valid for 10 hours (36000 seconds) by default
+The id_token is valid for 10 hours (36000 seconds) by default.
 
 You can check your id_token by passing it to Auth0's API test interface:  
 https://auth0.com/docs/auth-api#post--tokeninfo
@@ -166,6 +166,18 @@ From the AWS console https://console.aws.amazon.com/lambda/home#/create?step=2
 
 Click Next and Create
 
+#### Testing Lambda
+
+In the Lambda console, select Actions -> Configure Test event.
+
+Use the following JSON as the test event data. The id_token is the same format we used in event.json above. Click Save and Test to run the Lambda.
+
+    {
+        "type": "TOKEN",
+        "authorizationToken": "Bearer <id_token>",
+        "methodArn": "arn:aws:execute-api:::"
+    }
+
 ### Create IAM Role
 
 You will need to create an IAM Role that has permissions to invoke the Lambda function we created above.
@@ -199,7 +211,7 @@ In the left panel, under your API name, click on **Custom Authorizers**. Click o
 * Lambda region : < from previous step >
 * Execution role : < the ARN of the Role we created in the previous step > 
 * Identity token source : method.request.header.Authorization
-* Token validation expression : ^Bearer [-0-9a-zA-z\.]*$
+* Token validation expression : ```^Bearer [-0-9a-zA-z\.]*$```
 ** Cut-and-paste this regular expression from ^ to $ inclusive
 * Result TTL in seconds : 3600
 
@@ -275,3 +287,4 @@ You can use Postman to test the REST API
 #### In (modern) browsers console with fetch
 
     fetch( '<url>', { method: 'POST', headers: { Authorization : 'Bearer <id_token>' }}).then(response => { console.log( response );});
+    

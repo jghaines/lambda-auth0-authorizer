@@ -19,6 +19,13 @@ if ( process.env.AWS_REGION ) {
 var dynamo = new AWS.DynamoDB.DocumentClient();
 Promise.promisifyAll( Object.getPrototypeOf( dynamo ));
 
+
+///// TODO : use promises to load these asynchronously
+///// return Promise.resolve to return cached values
+///// see : http://bluebirdjs.com/docs/api/promise.method.html
+
+
+
 var policyDocumentFilename = 'policyDocument.json';
 var policyDocument;
 try {
