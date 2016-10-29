@@ -4,7 +4,7 @@
 
 var ACCESS_TOKEN_LENGTH = 16; // (aparent) length of an Autho0 access_token
 
-// since AWS Lambda doesn't (yet) provide environment varibles, load them from .env
+// since AWS Lambda doesn't (yet) provide environment variables, load them from .env
 require('dotenv').config();
 
 var fs = require('fs');
