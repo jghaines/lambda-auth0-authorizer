@@ -85,14 +85,29 @@ var getToken = function( params ) {
     return match[1];
 }
 
+var returnAuth0UserInfo = function( auth0return ) {
+    if ( ! auth0return ) throw new Error( 'Auth0 empty return' );
+    if ( auth0return === 'Unauthorized') {
+        throw new Error( 'Auth0 reports Unauthorized' )
+    } else if ( ! auth0return ) {
+
+    }
+
+    return auth0return
+}
+
 // if dynamo.json is included in the package, save the userInfo to DynamoDB
 var saveUserInfo = function( userInfo ) {        
+    if ( ! userInfo ) throw new Error( 'saveUserInfo - expected userInfo parameter' );
+    if ( ! userInfo.user_id ) throw new Error( 'saveUserInfo - expected userInfo.user_id parameter' );
+
     if ( dynamoParameters ) {
         var putParams =  Object.assign({}, dynamoParameters);
         var hashkeyName = Object.keys( putParams.Item )[0];
         putParams.Item = userInfo;
         putParams.Item[ hashkeyName ] = userInfo.user_id;
-        return dynamo.putAsync( putParams ).then( () => userInfo );        
+        return dynamo.putAsync( putParams )
+            .then( () => userInfo );        
     } else {
         return userInfo;
     }
@@ -130,6 +145,7 @@ module.exports.authenticate = function (params) {
     }
 
     return getTokenDataPromise
+        .then( returnAuth0UserInfo )
         .then( saveUserInfo )
         .then( getPrincipalId )
         .then( getAuthentication );
