@@ -2,7 +2,7 @@
 
 // static setup that can be done at load-time
 
-var ACCESS_TOKEN_LENGTH = 16; // (aparent) length of an Autho0 access_token
+var ACCESS_TOKEN_LENGTH = 16; // (apparent) length of an Autho0 access_token
 
 // since AWS Lambda doesn't (yet) provide environment variables, load them from .env
 require('dotenv').config();
