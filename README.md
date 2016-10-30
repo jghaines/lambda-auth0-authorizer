@@ -175,7 +175,7 @@ Use the following JSON as the test event data. The id_token is the same format w
     {
         "type": "TOKEN",
         "authorizationToken": "Bearer <id_token>",
-        "methodArn": "arn:aws:execute-api:::"
+        "methodArn":"arn:aws:execute-api:us-east-1:1234567890:apiId/stage/method/resourcePath"
     }
 
 ### Create IAM Role
