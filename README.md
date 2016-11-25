@@ -146,7 +146,7 @@ The Message is the authorization data that the Lambda function returns to API Ga
 
 ### Create bundle
 
-You can create the bundle using `npm zip`. This creates a lambda-auth0-authorizer.zip deployment package with all the source, configuration and node modules AWS Lambda needs.
+You can create the bundle using `npm run zip`. This creates a lambda-auth0-authorizer.zip deployment package with all the source, configuration and node modules AWS Lambda needs.
 
 ### Create Lambda function
 
