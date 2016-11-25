@@ -199,6 +199,25 @@ That Role will need to have a Policy similar to the following:
         ]
     }
 
+You will also need to set a "Trust Relationship for the role". This will allow the API Gateway permission to assume the role and run the lambda function. The trust relationship can be set in a separate tab in the AWS console. Click the "Edit Trust Relationship button". It should look similar to the following:
+
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": [
+              "apigateway.amazonaws.com",
+              "lambda.amazonaws.com"
+            ]
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    }
+
+
 ### Configure API Gateway
 
 From the AWS console https://console.aws.amazon.com/apigateway/home
