@@ -4,7 +4,9 @@
 
 var ACCESS_TOKEN_LENGTH = 16; // (apparent) length of an Autho0 access_token
 
-// since AWS Lambda doesn't (yet) provide environment variables, load them from .env
+// Lambda now supports environment variables - http://docs.aws.amazon.com/lambda/latest/dg/tutorial-env_cli.html
+// a .env file can be used as a development convenience. Real environment variables can be used in deployment and
+// will override anything loaded by dotenv.
 require('dotenv').config();
 
 var fs = require('fs');
