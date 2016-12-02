@@ -26,6 +26,13 @@ Auth0 offers a number of SDKs as well as integrations with AWS.
 
 This package gives you the code for a Custom Authorizer that will, with a little configuration, perform Auth0 authentication on API Gateway requests.
 
+### What alternatives are there to this lambda-auth0-authorizer?
+
+Auth0 uses JWTs. There are several Custom Authorizers for JWTs:
+* https://github.com/byu-oit-appdev/aws-jwt-auth
+* https://github.com/kopertop/lambda-jwt
+
+
 
 ## Configuration
 
