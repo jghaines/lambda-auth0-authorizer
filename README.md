@@ -49,7 +49,12 @@ Values specified in this file will set the corresponding environment variables.
 You will need to set:
 
     AUTH0_DOMAIN=mydomain.auth0.com
+    # or:
+    AUTH0_DOMAIN_PARAMETER=ssm-parameter-name
+
     AUTH0_CLIENTID=MyClientId
+    # or:
+    AUTH0_CLIENTID_PARAMETER=ssm-parameter-name
 
 You can obtain these values from your Auth0 [Application settings](https://manage.auth0.com/#/applications).
 

@@ -19,7 +19,9 @@ if ( process.env.AWS_REGION ) {
     AWS.config.update( { region: process.env.AWS_REGION } );
 }
 var dynamo = new AWS.DynamoDB.DocumentClient();
+var ssm = new AWS.SSM();
 Promise.promisifyAll( Object.getPrototypeOf( dynamo ));
+Promise.promisifyAll( Object.getPrototypeOf( ssm ));
 
 
 ///// TODO : use promises to load these asynchronously
@@ -53,24 +55,63 @@ try {
 
 var AuthenticationClient = require('auth0').AuthenticationClient;
 
-if ( typeof process.env.AUTH0_DOMAIN === "undefined" || ! process.env.AUTH0_DOMAIN.match( /\.auth0\.com$/ )  ) {
-    throw new Error( "Expected AUTHO_DOMAIN environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
+var testClientOptions = function( domain, clientId ) {
+    if ( typeof domain === "undefined" || ! domain.match( /\.auth0\.com$/ )  ) {
+        throw new Error( "Expected AUTHO_DOMAIN or AUTH0_DOMAIN_PARAMETER environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
+    }
+
+    if ( typeof clientId === "undefined" || clientId.length === 0 ) {
+        throw new Error( "Expected AUTH0_CLIENTID or AUTH0_CLIENTID_PARAMETER environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
+    }
 }
 
-if ( typeof process.env.AUTH0_CLIENTID === "undefined" || process.env.AUTH0_CLIENTID.length === 0 ) {
-    throw new Error( "Expected AUTH0_CLIENTID environment variable to be set in .env file. See https://manage.auth0.com/#/applications" )
-}
+var getClient = function() {
+    if ( process.env.AUTH0_DOMAIN && process.env.AUTH0_DOMAIN_PARAMETER ) {
+        throw new Error( "Expected only one of AUTH0_DOMAIN and AUTH0_DOMAIN_PARAMETER environment variable to be set in .env file." )
+    }
+    if ( process.env.AUTH0_CLIENTID && process.env.AUTH0_CLIENTID_PARAMETER ) {
+        throw new Error( "Expected only one of AUTH0_CLIENTID and AUTH0_CLIENTID_PARAMETER environment variable to be set in .env file." )
+    }
 
-var auth0 = new AuthenticationClient( {
-  domain    : process.env.AUTH0_DOMAIN,
-  clientId  : process.env.AUTH0_CLIENTID
-} );
+    var domain, clientId
+    var promise = Promise.resolve()
+
+    if ( process.env.AUTH0_DOMAIN_PARAMETER ) {
+        promise = Promise.all( [
+            promise,
+            ssm.getParameterAsync( { Name: process.env.AUTH0_DOMAIN_PARAMETER, WithDecryption: true } )
+                .then( (data) => {
+                    domain = data.Parameter.Value
+                } )
+        ] )
+    } else {
+        domain = process.env.AUTH0_DOMAIN
+    }
+
+    if ( process.env.AUTH0_CLIENTID_PARAMETER ) {
+        promise = Promise.all( [
+            promise,
+            ssm.getParameterAsync( { Name: process.env.AUTH0_CLIENTID_PARAMETER, WithDecryption: true } )
+                .then( (data) => {
+                    clientId = data.Parameter.Value
+                } )
+        ] )
+    } else {
+        clientId = process.env.AUTH0_CLIENTID
+    }
+
+    return promise.then( () => {
+        testClientOptions( domain, clientId )
+        return new AuthenticationClient( {
+            domain    : domain,
+            clientId  : clientId
+        } )
+    } )
+}
 
 
 // extract and return the Bearer Token from the Lambda event parameters
 var getToken = function( params ) {
-    var token;
-    
     if ( ! params.type || params.type !== 'TOKEN' ) {
         throw new Error( "Expected 'event.type' parameter to have value TOKEN" );
     }
@@ -79,7 +120,7 @@ var getToken = function( params ) {
     if ( !tokenString ) {
         throw new Error( "Expected 'event.authorizationToken' parameter to be set" );
     }
-    
+
     var match = tokenString.match( /^Bearer (.*)$/ );
     if ( ! match || match.length < 2 ) {
         throw new Error( "Invalid Authorization token - '" + tokenString + "' does not match 'Bearer .*'" );
@@ -91,15 +132,13 @@ var returnAuth0UserInfo = function( auth0return ) {
     if ( ! auth0return ) throw new Error( 'Auth0 empty return' );
     if ( auth0return === 'Unauthorized') {
         throw new Error( 'Auth0 reports Unauthorized' )
-    } else if ( ! auth0return ) {
-
     }
 
     return auth0return
 }
 
 // if dynamo.json is included in the package, save the userInfo to DynamoDB
-var saveUserInfo = function( userInfo ) {        
+var saveUserInfo = function( userInfo ) {
     if ( ! userInfo ) throw new Error( 'saveUserInfo - expected userInfo parameter' );
     if ( ! userInfo.user_id ) throw new Error( 'saveUserInfo - expected userInfo.user_id parameter' );
 
@@ -109,7 +148,7 @@ var saveUserInfo = function( userInfo ) {
         putParams.Item = userInfo;
         putParams.Item[ hashkeyName ] = userInfo.user_id;
         return dynamo.putAsync( putParams )
-            .then( () => userInfo );        
+            .then( () => userInfo );
     } else {
         return userInfo;
     }
@@ -122,7 +161,7 @@ var getPrincipalId = function( userInfo ) {
         throw new Error( "No user_id returned from Auth0" );
     }
     console.log( 'Auth0 authentication successful for user_id ' + userInfo.user_id );
-    
+
     return userInfo.user_id;
 }
 
@@ -135,18 +174,18 @@ var getAuthentication = function( principalId ) {
 }
 
 module.exports.authenticate = function (params) {
-    var token = getToken(params);
+    return getClient()
+        .then( ( auth0 ) => {
+            var token = getToken(params);
 
-    var getTokenDataPromise;
-    if ( token.length === ACCESS_TOKEN_LENGTH ) { // Auth0 v1 access_token (deprecated)
-        getTokenDataPromise = auth0.users.getInfo( token ); 
-    } else if ( token.length > ACCESS_TOKEN_LENGTH ) { // (probably) Auth0 id_token
-        getTokenDataPromise = auth0.tokens.getInfo( token ); 
-    } else {
-        throw new TypeError( "Bearer token too short - expected >= 16 charaters" );
-    }
-
-    return getTokenDataPromise
+            if ( token.length === ACCESS_TOKEN_LENGTH ) { // Auth0 v1 access_token (deprecated)
+                return auth0.users.getInfo( token );
+            } else if ( token.length > ACCESS_TOKEN_LENGTH ) { // (probably) Auth0 id_token
+                return auth0.tokens.getInfo( token );
+            } else {
+                throw new TypeError( "Bearer token too short - expected >= 16 charaters" );
+            }
+        } )
         .then( returnAuth0UserInfo )
         .then( saveUserInfo )
         .then( getPrincipalId )

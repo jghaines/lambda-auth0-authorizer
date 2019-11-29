@@ -8,7 +8,6 @@ module.exports.handler = function( event, context ) {
     .then( context.succeed )
     .catch( err => {
       if ( ! err ) context.fail( "Unhandled error case" );
-//      if ( err.message ) context.fail( err.message );
       context.fail( err );
     });
 };
