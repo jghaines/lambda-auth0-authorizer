@@ -15,8 +15,8 @@
     "dotenv": "^2.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "2.2.48",
-    "lambda-local": "0.0.9"
+    "aws-sdk": "^2.580.0",
+    "lambda-local": "^1.6.3"
   },
   "repository": {
     "type": "git",
