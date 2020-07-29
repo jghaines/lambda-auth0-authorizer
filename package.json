@@ -10,7 +10,7 @@
   "author": "Jason Haines",
   "license": "Apache-2.0",
   "dependencies": {
-    "auth0": "^2.5.0",
+    "auth0": "^2.27.1",
     "bluebird": "^3.4.6",
     "dotenv": "^2.0.0"
   },
