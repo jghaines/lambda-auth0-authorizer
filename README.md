@@ -1,6 +1,9 @@
 # lambda-auth0-authorizer
 
-An AWS Custom Authorizer for AWS API Gateway that support Auth0 Bearer tokens.
+An AWS Custom Authorizer for AWS API Gateway that support Auth0 JWT Bearer tokens.
+
+> **⚠⚠ WARNING ⚠⚠**  
+>  You almost certainly don't want to use this project. Use the native [JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) instead.
 
 ## About
 
