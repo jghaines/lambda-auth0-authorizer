@@ -3,7 +3,7 @@
 An AWS Custom Authorizer for AWS API Gateway that support Auth0 JWT Bearer tokens.
 
 > **⚠⚠ WARNING ⚠⚠**  
->  You almost certainly don't want to use this project. Use the native [JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) instead.
+>  You almost certainly don't want to use this project. Use the native [JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) instead. Bear in mind that REST API in API Gateway doesn't support native JWT authorizers so if this is the case the project is still relevant.
 
 ## About
 
