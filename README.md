@@ -3,7 +3,25 @@
 An AWS Custom Authorizer for AWS API Gateway that support Auth0 JWT Bearer tokens.
 
 > **⚠⚠ WARNING ⚠⚠**  
->  You almost certainly don't want to use this project. Use the native [JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) instead. Bear in mind that REST API in API Gateway doesn't support native JWT authorizers so if this is the case the project is still relevant.
+> This project is no longer supported.
+>
+> For many use cases, you are better off using the AWS HTTP API Gateway with native [JWT authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html) instead. See the Auth0 blog post [Securing AWS HTTP APIs with JWT Authorizers](https://auth0.com/blog/securing-aws-http-apis-with-jwt-authorizers/#Create-an-HTTP-API-on-AWS) (Oct 2021)
+>
+> If you insist on using the AWS REST API Gateway, consider one of the alternatives below
+
+## Alternatives to lambda-auth0-authorizer?
+
+The find folks at Auth0 (somewhat sneakily) [forked this repo](https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer) to:
+
+* <https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer>
+
+You can find it referenced in their documentation [Secure AWS API Gateway Endpoints Using Custom Authorizers](https://auth0.com/docs/customize/integrations/aws/aws-api-gateway-custom-authorizers).
+
+Auth0 uses JWTs. There are several Custom Authorizers for JWTs:
+
+* <https://github.com/byu-oit-appdev/aws-jwt-auth>
+* <https://github.com/kopertop/lambda-jwt>
+
 
 ## About
 
@@ -28,12 +46,6 @@ Auth0 offers a number of SDKs as well as integrations with AWS.
 ### What is lambda-auth0-authorizer?
 
 This package gives you the code for a Custom Authorizer that will, with a little configuration, perform Auth0 authentication on API Gateway requests.
-
-### What alternatives are there to this lambda-auth0-authorizer?
-
-Auth0 uses JWTs. There are several Custom Authorizers for JWTs:
-* https://github.com/byu-oit-appdev/aws-jwt-auth
-* https://github.com/kopertop/lambda-jwt
 
 
 
