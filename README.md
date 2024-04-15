@@ -9,9 +9,9 @@ An AWS Custom Authorizer for AWS API Gateway that support Auth0 JWT Bearer token
 >
 > If you insist on using the AWS REST API Gateway, consider one of the alternatives below
 
-## Alternatives to lambda-auth0-authorizer?
+## Alternatives to lambda-auth0-authorizer
 
-The find folks at Auth0 (somewhat sneakily) [forked this repo](https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer) to:
+The fine folks at Auth0 (somewhat sneakily) [forked this repo](https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer) to:
 
 * <https://github.com/auth0-samples/jwt-rsa-aws-custom-authorizer>
 
